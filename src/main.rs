@@ -31,6 +31,9 @@ enum Commands {
     Install {
         /// A specific system file to install
         file: Option<PathBuf>,
+        /// Install all configuration files with no prompt
+        #[arg(long)]
+        all: bool,
     },
 }
 
@@ -97,7 +100,7 @@ fn main() {
     match cli.commands {
         Commands::Add { file } => add::add(&ctx, &file),
         Commands::Stage => stage::stage(&ctx),
-        Commands::Install { file } => install::install(&ctx, &file),
+        Commands::Install { file, all } => install::install(&ctx, &file, all),
     }
     .unwrap();
 }
