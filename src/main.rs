@@ -1,19 +1,18 @@
-use std::path::PathBuf;
 use clap::{Parser, Subcommand};
-use walkdir::WalkDir;
 use home::home_dir;
+use std::path::PathBuf;
+use walkdir::WalkDir;
 
 mod add;
-mod stage;
 mod install;
-
+mod stage;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct CLI {
     #[command(subcommand)]
     commands: Commands,
-   
+
     /// The repository the configuration files are stored in
     #[arg(short, long)]
     repo: Option<PathBuf>,
@@ -21,16 +20,13 @@ struct CLI {
 
 #[derive(Subcommand, Debug)]
 enum Commands {
-    /// Add a configuration file to the repository
+    /// Add/update configuration files to the repository
     Add {
-        /// The configuration file to add to the repository
+        /// The configuration file to add/update
         file: PathBuf,
     },
-    /// Update the repository using modified local configuration files
-    Stage {
-        /// A specific file to stage
-        file: Option<PathBuf>,
-    },
+    /// Update the repository using all registered local configuration files
+    Stage,
     /// Install configuration files from the repository onto the system
     Install {
         /// A specific system file to install
@@ -48,7 +44,9 @@ impl Context {
         if let Some(repo) = &cli.repo {
             Context { repo: repo.clone() }
         } else {
-            let repo = std::env::var("CONFIGURATOR_REPO").unwrap_or_else(|_| panic!("$CONFIGURATOR_REPO not defined")).into();
+            let repo = std::env::var("CONFIGURATOR_REPO")
+                .unwrap_or_else(|_| panic!("$CONFIGURATOR_REPO not defined"))
+                .into();
             Context { repo }
         }
     }
@@ -83,7 +81,13 @@ impl Context {
         std::fs::create_dir_all(&home).unwrap();
         std::fs::create_dir_all(&root).unwrap();
         // std::fs::read_dir(&home).unwrap().chain(std::fs::read_dir(&root).unwrap())
-        WalkDir::new(&home).into_iter().chain(WalkDir::new(&root).into_iter()).map(Result::unwrap).map(walkdir::DirEntry::into_path).filter(|p| p.is_file()).collect()
+        WalkDir::new(&home)
+            .into_iter()
+            .chain(WalkDir::new(&root).into_iter())
+            .map(Result::unwrap)
+            .map(walkdir::DirEntry::into_path)
+            .filter(|p| p.is_file())
+            .collect()
     }
 }
 
@@ -92,7 +96,8 @@ fn main() {
     let ctx = Context::new(&cli);
     match cli.commands {
         Commands::Add { file } => add::add(&ctx, &file),
-        Commands::Stage { file } => stage::stage(&ctx, &file),
+        Commands::Stage => stage::stage(&ctx),
         Commands::Install { file } => install::install(&ctx, &file),
-    }.unwrap();
+    }
+    .unwrap();
 }
