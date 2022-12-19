@@ -9,11 +9,12 @@ pub fn list(ctx: &Context, simple: bool) -> Result<(), Error> {
             println!("{}", system_file.display());
         } else {
             if !ctx.are_files_different(&repo_file, &system_file) {
-                print!("{} ", "[INSTALLED]".green());
+                print!(" {} ", "🗸".green());
+                println!("{}", &system_file.display());
             } else {
-                print!("{}  ", "[MODIFIED]".red());
+                print!(" {} ", "🗶".red());
+                println!("{}", &system_file.display().to_string().bold());
             }
-            println!("{}", &system_file.display().to_string().bold());
         }
     }
     Ok(())
