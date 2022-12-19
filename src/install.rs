@@ -1,5 +1,6 @@
 use crate::Context;
 use clap::error::Error;
+use colored::Colorize;
 use inquire::Confirm;
 use std::path::PathBuf;
 
@@ -7,10 +8,13 @@ pub fn install(ctx: &Context, file: &Option<PathBuf>, all: bool) -> Result<(), E
     if let Some(file) = file {
         let system_file = std::fs::canonicalize(file)?;
         let repo_file = ctx.absolute_to_configurator_path(&system_file);
-        if Confirm::new(&format!("Overwrite {}?", &system_file.display()))
-            .with_default(true)
-            .prompt()
-            .unwrap()
+        if Confirm::new(&format!(
+            "Overwrite {}?",
+            &system_file.display().to_string().bold()
+        ))
+        .with_default(true)
+        .prompt()
+        .unwrap()
         {
             std::fs::create_dir_all(&system_file.parent().unwrap())?;
             std::fs::copy(&repo_file, &system_file)?;
@@ -21,19 +25,22 @@ pub fn install(ctx: &Context, file: &Option<PathBuf>, all: bool) -> Result<(), E
             let system_file = ctx.configurator_to_absolute_path(&repo_file);
             if ctx.are_files_different(&repo_file, &system_file)
                 && (all
-                    || Confirm::new(&format!("Overwrite {}?", &system_file.display()))
-                        .with_default(false)
-                        .prompt()
-                        .unwrap())
+                    || Confirm::new(&format!(
+                        "Overwrite {}?",
+                        &system_file.display().to_string().bold()
+                    ))
+                    .with_default(false)
+                    .prompt()
+                    .unwrap())
             {
                 std::fs::create_dir_all(&system_file.parent().unwrap())?;
                 std::fs::copy(&repo_file, &system_file)?;
-                println!("Installed {}", &system_file.display());
+                println!("Installed {}", &system_file.display().to_string().bold());
                 was_file_installed = true;
             }
         }
         if !was_file_installed {
-            println!("Everything is already up to date!");
+            println!("{}", "Everything is already up to date!".green());
         }
     }
     Ok(())
