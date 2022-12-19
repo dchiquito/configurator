@@ -5,7 +5,11 @@ use std::path::PathBuf;
 pub fn add(ctx: &Context, file: &PathBuf) -> Result<(), Error> {
     let system_file = std::fs::canonicalize(file)?;
     let repo_file = ctx.absolute_to_configurator_path(&system_file);
-    std::fs::copy(&system_file, &repo_file)?;
-    println!("File added: {}", repo_file.display());
+    if ctx.are_files_different(&system_file, &repo_file) {
+        std::fs::copy(&system_file, &repo_file)?;
+        println!("Added {}", repo_file.display());
+    } else {
+        println!("Nothing to update!");
+    }
     Ok(())
 }

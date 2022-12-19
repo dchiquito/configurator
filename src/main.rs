@@ -1,4 +1,5 @@
 use clap::{Parser, Subcommand};
+use file_diff::diff;
 use home::home_dir;
 use std::path::PathBuf;
 use walkdir::WalkDir;
@@ -91,6 +92,9 @@ impl Context {
             .map(walkdir::DirEntry::into_path)
             .filter(|p| p.is_file())
             .collect()
+    }
+    fn are_files_different(&self, a: &PathBuf, b: &PathBuf) -> bool {
+        !diff(a.to_str().unwrap(), b.to_str().unwrap())
     }
 }
 
