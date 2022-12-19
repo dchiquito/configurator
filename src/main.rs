@@ -5,6 +5,7 @@ use std::path::PathBuf;
 use walkdir::WalkDir;
 
 mod add;
+mod diff;
 mod install;
 mod list;
 mod stage;
@@ -40,6 +41,9 @@ enum Commands {
     List {
         #[arg(short, long)]
         simple: bool,
+    },
+    Diff {
+        file: Option<PathBuf>,
     },
 }
 
@@ -111,6 +115,7 @@ fn main() {
         Commands::Stage => stage::stage(&ctx),
         Commands::Install { file, all } => install::install(&ctx, &file, all),
         Commands::List { simple } => list::list(&ctx, simple),
+        Commands::Diff { file } => diff::diff(&ctx, &file),
     }
     .unwrap();
 }
