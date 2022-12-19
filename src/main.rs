@@ -6,6 +6,7 @@ use walkdir::WalkDir;
 
 mod add;
 mod install;
+mod list;
 mod stage;
 
 #[derive(Parser, Debug)]
@@ -33,8 +34,12 @@ enum Commands {
         /// A specific system file to install
         file: Option<PathBuf>,
         /// Install all configuration files with no prompt
-        #[arg(long)]
+        #[arg(short, long)]
         all: bool,
+    },
+    List {
+        #[arg(short, long)]
+        simple: bool,
     },
 }
 
@@ -105,6 +110,7 @@ fn main() {
         Commands::Add { file } => add::add(&ctx, &file),
         Commands::Stage => stage::stage(&ctx),
         Commands::Install { file, all } => install::install(&ctx, &file, all),
+        Commands::List { simple } => list::list(&ctx, simple),
     }
     .unwrap();
 }
