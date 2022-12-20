@@ -33,7 +33,11 @@ pub fn status(ctx: &Context, all: bool) -> Result<(), Error> {
             println!("{}", "Everything is up to date!".green());
         } else {
             for system_file in different_files.iter() {
-                println!("{}", format!("modified: {}", &system_file.display()).red());
+                if system_file.exists() {
+                    println!("{}", format!("modified: {}", &system_file.display()).red());
+                } else {
+                    println!("{}", format!("missing:  {}", &system_file.display()).red());
+                }
             }
         }
     }
