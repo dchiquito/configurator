@@ -43,7 +43,11 @@ enum Commands {
     /// List all configuration files currently stored in the repository
     List,
     /// Show the current installation status for all files currently stored in the repository
-    Status,
+    Status {
+        /// Show the status for all configuration files
+        #[arg(short, long)]
+        all: bool,
+    },
     /// Show a diff between the system files and the repository files
     Diff {
         /// A specific system file to diff
@@ -119,7 +123,7 @@ fn main() {
         Commands::Stage => stage::stage(&ctx),
         Commands::Install { file, all } => install::install(&ctx, &file, all),
         Commands::List => list::list(&ctx),
-        Commands::Status => status::status(&ctx),
+        Commands::Status { all } => status::status(&ctx, all),
         Commands::Diff { file } => diff::diff(&ctx, &file),
     }
     .unwrap_or_else(|x| {
