@@ -38,11 +38,15 @@ enum Commands {
         #[arg(short, long)]
         all: bool,
     },
+    /// List all configuration files currently stored in the repository
     List {
+        /// Only print file names, no formatting or installation status
         #[arg(short, long)]
         simple: bool,
     },
+    /// Show a diff between the system files and the repository files
     Diff {
+        /// A specific system file to diff
         file: Option<PathBuf>,
     },
 }
