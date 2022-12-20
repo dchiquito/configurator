@@ -5,19 +5,26 @@ use inquire::Confirm;
 use std::path::PathBuf;
 
 pub fn install(ctx: &Context, file: &Option<PathBuf>, all: bool) -> Result<(), Error> {
-    if let Some(file) = file {
-        let system_file = std::fs::canonicalize(file)?;
+    if let Some(system_file) = file {
         let repo_file = ctx.absolute_to_configurator_path(&system_file);
-        if Confirm::new(&format!(
-            "Overwrite {}?",
-            &system_file.display().to_string().bold()
-        ))
-        .with_default(true)
-        .prompt()
-        .unwrap()
-        {
-            std::fs::create_dir_all(&system_file.parent().unwrap())?;
-            std::fs::copy(&repo_file, &system_file)?;
+        if !repo_file.exists() {
+            println!(
+                "{}",
+                format!("{} is not in the repository", system_file.display()).red()
+            );
+        } else {
+            if (!system_file.exists())
+                || Confirm::new(&format!(
+                    "Overwrite {}?",
+                    &system_file.display().to_string().bold()
+                ))
+                .with_default(true)
+                .prompt()
+                .unwrap()
+            {
+                std::fs::create_dir_all(&system_file.parent().unwrap())?;
+                std::fs::copy(&repo_file, &system_file)?;
+            }
         }
     } else {
         let mut was_file_installed = false;
