@@ -16,7 +16,8 @@ fn print_diff(repo_file: &PathBuf, system_file: &PathBuf) -> Result<(), Error> {
 }
 
 pub fn diff(ctx: &Context, file: &Option<PathBuf>) -> Result<(), Error> {
-    if let Some(system_file) = file {
+    if let Some(file) = file {
+        let system_file = std::fs::canonicalize(file)?;
         let repo_file = ctx.absolute_to_configurator_path(&system_file);
         if ctx.are_files_different(&system_file, &repo_file) {
             print_diff(&repo_file, &system_file)?;

@@ -1,4 +1,5 @@
 use clap::{Parser, Subcommand};
+use colored::Colorize;
 use file_diff::diff;
 use home::home_dir;
 use std::path::PathBuf;
@@ -121,5 +122,8 @@ fn main() {
         Commands::Status => status::status(&ctx),
         Commands::Diff { file } => diff::diff(&ctx, &file),
     }
-    .unwrap();
+    .unwrap_or_else(|x| {
+        println!("{}", format!("{}", x).red());
+        ()
+    });
 }
