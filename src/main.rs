@@ -9,6 +9,7 @@ mod diff;
 mod install;
 mod list;
 mod stage;
+mod status;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -39,11 +40,9 @@ enum Commands {
         all: bool,
     },
     /// List all configuration files currently stored in the repository
-    List {
-        /// Only print file names, no formatting or installation status
-        #[arg(short, long)]
-        simple: bool,
-    },
+    List,
+    /// Show the current installation status for all files currently stored in the repository
+    Status,
     /// Show a diff between the system files and the repository files
     Diff {
         /// A specific system file to diff
@@ -118,7 +117,8 @@ fn main() {
         Commands::Add { file } => add::add(&ctx, &file),
         Commands::Stage => stage::stage(&ctx),
         Commands::Install { file, all } => install::install(&ctx, &file, all),
-        Commands::List { simple } => list::list(&ctx, simple),
+        Commands::List => list::list(&ctx),
+        Commands::Status => status::status(&ctx),
         Commands::Diff { file } => diff::diff(&ctx, &file),
     }
     .unwrap();
