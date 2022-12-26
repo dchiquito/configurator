@@ -1,4 +1,4 @@
-use crate::Context;
+use crate::context::Context;
 use clap::error::Error;
 
 pub fn list(ctx: &Context) -> Result<(), Error> {

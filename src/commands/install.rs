@@ -1,4 +1,4 @@
-use crate::Context;
+use crate::context::Context;
 use clap::error::Error;
 use colored::Colorize;
 use inquire::Confirm;
