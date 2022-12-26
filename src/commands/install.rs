@@ -22,8 +22,7 @@ pub fn install(ctx: &Context, file: &Option<PathBuf>, all: bool) -> Result<(), E
                 .prompt()
                 .unwrap()
             {
-                std::fs::create_dir_all(&system_file.parent().unwrap())?;
-                std::fs::copy(&repo_file, &system_file)?;
+                ctx.copy(&repo_file, &system_file)?;
             }
         }
     } else {
@@ -40,8 +39,7 @@ pub fn install(ctx: &Context, file: &Option<PathBuf>, all: bool) -> Result<(), E
                     .prompt()
                     .unwrap())
             {
-                std::fs::create_dir_all(&system_file.parent().unwrap())?;
-                std::fs::copy(&repo_file, &system_file)?;
+                ctx.copy(&repo_file, &system_file)?;
                 println!("Installed {}", &system_file.display().to_string().bold());
                 was_file_installed = true;
             }
