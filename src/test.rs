@@ -19,12 +19,14 @@ impl Helper {
         // System files
         let mut system_dir = temp_dir.clone();
         system_dir.push("system");
+        std::fs::remove_dir_all(&system_dir).ok();
         std::fs::create_dir_all(&system_dir).unwrap();
 
         // Home directory
         let mut home_dir = home_dir().unwrap();
         home_dir.push(".configurator");
         home_dir.push("test");
+        std::fs::remove_dir_all(&home_dir).ok();
         std::fs::create_dir_all(&home_dir).unwrap();
 
         // Repository
@@ -35,6 +37,7 @@ impl Helper {
         let mut repo_system_dir = repo_dir.clone();
         repo_system_dir.push("root");
         repo_system_dir.push(system_dir.iter().skip(1).collect::<PathBuf>());
+        std::fs::remove_dir_all(&repo_system_dir).ok();
         std::fs::create_dir_all(&repo_system_dir).unwrap();
         // The repository home dir looks like:
         // {repo}/home/.configurator/test/
@@ -42,6 +45,7 @@ impl Helper {
         repo_home_dir.push("home");
         repo_home_dir.push(".configurator");
         repo_home_dir.push("test");
+        std::fs::remove_dir_all(&repo_home_dir).ok();
         std::fs::create_dir_all(&repo_home_dir).unwrap();
 
         let ctx = Context::new(&Some(repo_dir.clone()));
