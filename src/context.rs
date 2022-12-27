@@ -1,7 +1,9 @@
 use clap::error::Error;
 use file_diff::diff;
 use home::home_dir;
-use std::path::PathBuf;
+use permissions::{is_readable, is_writable};
+use std::path::{Path, PathBuf};
+use sudo::with_env;
 use walkdir::WalkDir;
 
 #[derive(Clone, Debug)]
@@ -65,6 +67,10 @@ impl Context {
     pub fn copy(&self, src: &PathBuf, dest: &PathBuf) -> Result<(), Error> {
         Copier::new(self).add_file(src, dest).commit()
     }
+    fn escalate(&self) {
+        println!("Escalating privileges");
+        with_env(&vec!["CONFIGURATOR"]).unwrap();
+    }
 }
 
 /// Stores a list of files to copy all at once.
@@ -86,8 +92,15 @@ impl Copier {
         self
     }
     pub fn commit(&self) -> Result<(), Error> {
+        for (_src, dest) in self.files_to_copy.iter() {
+            std::fs::create_dir_all(&dest.parent().unwrap()).unwrap_or_else(|e| {
+                self.ctx.escalate();
+            });
+            if dest.exists() && !is_writable(dest)? || !is_writable(&dest.parent().unwrap())? {
+                self.ctx.escalate();
+            }
+        }
         for (src, dest) in self.files_to_copy.iter() {
-            std::fs::create_dir_all(&dest.parent().unwrap())?;
             std::fs::copy(&src, &dest)?;
         }
         Ok(())
