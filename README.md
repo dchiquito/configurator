@@ -52,3 +52,11 @@ All paths and references to `FILE` refer to the system path, not the repository 
 * `configurator install [FILE]` - Copy FILE from the repository onto the system. If no `FILE` is specified, copy all files.
 
 Note that if you are using a git repository as your `CONFIGURATOR_REPO`, you still need to commit your changes after running `add`/`stage`.
+
+## Testing
+
+Tests must be invoked like this:
+```sh
+cargo test -- --test-threads 1
+```
+This ensures that tests are run serially. Several tests reference the same files and require that the file be present/absent, so it's not possible for them to run in parallel.
