@@ -63,33 +63,8 @@ impl Context {
         !diff(a.to_str().unwrap(), b.to_str().unwrap())
     }
     pub fn copy(&self, src: &PathBuf, dest: &PathBuf) -> Result<(), Error> {
-        Copier::new(self).add_file(src, dest).commit()
-    }
-}
-
-/// Stores a list of files to copy all at once.
-/// This prevents multiple redundant file copies in the event of privilege escalation.
-pub struct Copier {
-    ctx: Context,
-    files_to_copy: Vec<(PathBuf, PathBuf)>,
-}
-
-impl Copier {
-    pub fn new(ctx: &Context) -> Copier {
-        Copier {
-            ctx: ctx.clone(),
-            files_to_copy: vec![],
-        }
-    }
-    pub fn add_file(&mut self, src: &PathBuf, dest: &PathBuf) -> &mut Copier {
-        self.files_to_copy.push((src.clone(), dest.clone()));
-        self
-    }
-    pub fn commit(&self) -> Result<(), Error> {
-        for (src, dest) in self.files_to_copy.iter() {
-            std::fs::create_dir_all(&dest.parent().unwrap()).unwrap();
-            std::fs::copy(&src, &dest)?;
-        }
+        std::fs::create_dir_all(&dest.parent().unwrap()).unwrap();
+        std::fs::copy(&src, &dest)?;
         Ok(())
     }
 }
