@@ -50,3 +50,18 @@ pub fn install(ctx: &Context, file: &Option<PathBuf>, all: bool) -> Result<(), E
     }
     Ok(())
 }
+
+#[cfg(test)]
+mod test {
+    use super::install;
+    use crate::test::Helper;
+
+    #[test]
+    fn test_install_new_home_file() {
+        let (helper, ctx) = Helper::setup();
+        let repo = helper.create_repo_home_file("a.txt", "a");
+        let home = helper.no_home_file("a.txt");
+        install(&ctx, &Some(home.clone()), false).unwrap();
+        helper.assert_eq(&home, &repo);
+    }
+}
