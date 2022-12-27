@@ -1,5 +1,6 @@
 use clap::{Parser, Subcommand};
 use std::path::PathBuf;
+use sudo::with_env;
 
 use crate::context::Context;
 
@@ -19,10 +20,17 @@ pub struct CLI {
     /// The repository the configuration files are stored in
     #[arg(short, long)]
     pub repo: Option<PathBuf>,
+
+    /// Run the command as root
+    #[arg(long)]
+    pub root: bool,
 }
 
 impl CLI {
     pub fn run_command(&self) -> Result<(), clap::error::Error> {
+        if self.root {
+            with_env(&vec!["CONFIGURATOR"]).unwrap();
+        }
         let ctx = Context::new(&self.repo);
         match &self.commands {
             Commands::Add { file } => add::add(&ctx, &file),
