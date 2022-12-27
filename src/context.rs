@@ -1,6 +1,8 @@
 use clap::error::Error;
+use colored::Colorize;
 use file_diff::diff;
 use home::home_dir;
+use std::io;
 use std::path::PathBuf;
 use walkdir::WalkDir;
 
@@ -63,8 +65,15 @@ impl Context {
         !diff(a.to_str().unwrap(), b.to_str().unwrap())
     }
     pub fn copy(&self, src: &PathBuf, dest: &PathBuf) -> Result<(), Error> {
-        std::fs::create_dir_all(&dest.parent().unwrap()).unwrap();
-        std::fs::copy(&src, &dest)?;
+        std::fs::create_dir_all(&dest.parent().unwrap()).map_err(Context::log_permission_error)?;
+        std::fs::copy(&src, &dest).map_err(Context::log_permission_error)?;
         Ok(())
+    }
+    fn log_permission_error(e: io::Error) -> io::Error {
+        match e.kind() {
+            io::ErrorKind::PermissionDenied => println!("{}", "Consider using --root".red()),
+            _ => (),
+        };
+        e
     }
 }
