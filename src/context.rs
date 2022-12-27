@@ -1,8 +1,8 @@
 use clap::error::Error;
 use file_diff::diff;
 use home::home_dir;
-use permissions::{is_readable, is_writable};
-use std::path::{Path, PathBuf};
+use permissions::is_writable;
+use std::path::PathBuf;
 use sudo::with_env;
 use walkdir::WalkDir;
 
@@ -93,7 +93,7 @@ impl Copier {
     }
     pub fn commit(&self) -> Result<(), Error> {
         for (_src, dest) in self.files_to_copy.iter() {
-            std::fs::create_dir_all(&dest.parent().unwrap()).unwrap_or_else(|e| {
+            std::fs::create_dir_all(&dest.parent().unwrap()).unwrap_or_else(|_| {
                 self.ctx.escalate();
             });
             if dest.exists() && !is_writable(dest)? || !is_writable(&dest.parent().unwrap())? {
