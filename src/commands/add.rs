@@ -24,7 +24,7 @@ mod test {
     fn test_add_new_home_file() {
         let (helper, ctx) = Helper::setup();
         let home = helper.create_home_file("a.txt", "a");
-        let repo = helper.no_repo_file("a.txt");
+        let repo = helper.no_repo_home_file("a.txt");
         add(&ctx, &home).unwrap();
         helper.assert_eq(&home, &repo);
     }
@@ -32,7 +32,7 @@ mod test {
     fn test_add_new_system_file() {
         let (helper, ctx) = Helper::setup();
         let system = helper.create_system_file("a.txt", "a");
-        let repo = helper.no_repo_file("a.txt");
+        let repo = helper.no_repo_system_file("a.txt");
         add(&ctx, &system).unwrap();
         helper.assert_eq(&system, &repo);
     }
@@ -40,7 +40,7 @@ mod test {
     fn test_add_home_file_overwrite() {
         let (helper, ctx) = Helper::setup();
         let home = helper.create_home_file("a.txt", "a");
-        let repo = helper.create_repo_file("a.txt", "b");
+        let repo = helper.create_repo_home_file("a.txt", "b");
         add(&ctx, &home).unwrap();
         helper.assert_eq(&home, &repo);
     }
@@ -48,7 +48,7 @@ mod test {
     fn test_add_system_file_overwrite() {
         let (helper, ctx) = Helper::setup();
         let system = helper.create_system_file("a.txt", "a");
-        let repo = helper.create_repo_file("a.txt", "b");
+        let repo = helper.create_repo_system_file("a.txt", "b");
         add(&ctx, &system).unwrap();
         helper.assert_eq(&system, &repo);
     }
