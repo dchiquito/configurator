@@ -8,9 +8,8 @@ mod context;
 mod test;
 
 fn main() {
-    let cli = commands::CLI::parse();
+    let cli = commands::Cli::parse();
     cli.run_command().unwrap_or_else(|x| {
         println!("{}", format!("{}", x).red());
-        ()
     });
 }

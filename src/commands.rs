@@ -13,7 +13,7 @@ mod status;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
-pub struct CLI {
+pub struct Cli {
     #[command(subcommand)]
     pub commands: Commands,
 
@@ -26,19 +26,19 @@ pub struct CLI {
     pub root: bool,
 }
 
-impl CLI {
+impl Cli {
     pub fn run_command(&self) -> Result<(), clap::error::Error> {
         if self.root {
-            with_env(&vec!["CONFIGURATOR"]).unwrap();
+            with_env(&["CONFIGURATOR"]).unwrap();
         }
         let ctx = Context::new(&self.repo);
         match &self.commands {
-            Commands::Add { file } => add::add(&ctx, &file),
+            Commands::Add { file } => add::add(&ctx, file),
             Commands::Stage => stage::stage(&ctx),
-            Commands::Install { file, all } => install::install(&ctx, &file, *all),
+            Commands::Install { file, all } => install::install(&ctx, file, *all),
             Commands::List => list::list(&ctx),
             Commands::Status { all } => status::status(&ctx, *all),
-            Commands::Diff { file } => diff::diff(&ctx, &file),
+            Commands::Diff { file } => diff::diff(&ctx, file),
         }
     }
 }

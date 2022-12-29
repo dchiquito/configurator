@@ -23,7 +23,7 @@ pub fn status(ctx: &Context, all: bool) -> Result<(), Error> {
             .map(|repo_file| {
                 (
                     repo_file.clone(),
-                    ctx.configurator_to_absolute_path(&repo_file),
+                    ctx.configurator_to_absolute_path(repo_file),
                 )
             })
             .filter(|(repo_file, system_file)| ctx.are_files_different(repo_file, system_file))

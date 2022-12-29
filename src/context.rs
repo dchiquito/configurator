@@ -3,7 +3,7 @@ use colored::Colorize;
 use file_diff::diff;
 use home::home_dir;
 use std::io;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
 
 #[derive(Clone, Debug)]
@@ -22,7 +22,7 @@ impl Context {
             Context { repo }
         }
     }
-    pub fn absolute_to_configurator_path(&self, file: &PathBuf) -> PathBuf {
+    pub fn absolute_to_configurator_path(&self, file: &Path) -> PathBuf {
         let mut path = self.repo.clone();
         let home = home_dir().unwrap();
         if file.starts_with(&home) {
@@ -34,7 +34,7 @@ impl Context {
         }
         path
     }
-    pub fn configurator_to_absolute_path(&self, file: &PathBuf) -> PathBuf {
+    pub fn configurator_to_absolute_path(&self, file: &Path) -> PathBuf {
         let file = std::fs::canonicalize(file).unwrap();
         let file = file.strip_prefix(&self.repo).unwrap();
         if file.starts_with("home") {
@@ -61,19 +61,18 @@ impl Context {
             .filter(|p| p.is_file())
             .collect()
     }
-    pub fn are_files_different(&self, a: &PathBuf, b: &PathBuf) -> bool {
+    pub fn are_files_different(&self, a: &Path, b: &Path) -> bool {
         !diff(a.to_str().unwrap(), b.to_str().unwrap())
     }
     pub fn copy(&self, src: &PathBuf, dest: &PathBuf) -> Result<(), Error> {
-        std::fs::create_dir_all(&dest.parent().unwrap()).map_err(Context::log_permission_error)?;
-        std::fs::copy(&src, &dest).map_err(Context::log_permission_error)?;
+        std::fs::create_dir_all(dest.parent().unwrap()).map_err(Context::log_permission_error)?;
+        std::fs::copy(src, dest).map_err(Context::log_permission_error)?;
         Ok(())
     }
     fn log_permission_error(e: io::Error) -> io::Error {
-        match e.kind() {
-            io::ErrorKind::PermissionDenied => println!("{}", "Consider using --root".red()),
-            _ => (),
-        };
+        if e.kind() == io::ErrorKind::PermissionDenied {
+            println!("{}", "Consider using --root".red());
+        }
         e
     }
 }
