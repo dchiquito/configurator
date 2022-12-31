@@ -2,7 +2,7 @@
 
 A simple CLI tool for copying system files into and out of a central location.
 
-I have multiple computers running Linux that all have their own array of configuration and system files (`.bashrc`, `.vimrc`, `i3`, font files, etc.). Manually updating and propogating changes between systems to maintain a consistent experience is quite painful. `configurator` solves this problem by synchronizing your files between your system and a central location (I use a [git repository](https://github.com/dchiquito/configurations)).
+I have multiple computers running Linux that all have their own array of configuration and system files (`.bashrc`, `.vimrc`, `i3`, font files, etc.). Manually updating and propagating changes between systems to maintain a consistent experience is quite painful. `configurator` solves this problem by synchronizing your files between your system and a central location (I use a [git repository](https://github.com/dchiquito/configurations)).
 
 ## Installation
 
@@ -67,7 +67,7 @@ To work with files which your user does not have read/write permission on, inclu
 
 In my experience, this is only required when `install`ing write protected system files, i.e. anything in `/etc/`.
 
-#### why no sudo
+#### Why no sudo
 By default, `cargo install` installs the executable into `~/.cargo/bin`, which is on your user's PATH. This means that when trying to run commands as root, for example, `sudo configurator add /etc/hosts`, the `configurator` executable cannot be located.
 
 If you're aware of a better solution, do let me know.
