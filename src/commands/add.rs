@@ -5,12 +5,26 @@ use std::path::PathBuf;
 
 pub fn add(ctx: &Context, file: &PathBuf) -> Result<(), Error> {
     let system_file = std::fs::canonicalize(file)?;
-    let repo_file = ctx.absolute_to_configurator_path(&system_file);
-    if ctx.are_files_different(&system_file, &repo_file) {
-        ctx.copy(&system_file, &repo_file)?;
-        println!("Added {}", repo_file.display().to_string().bold());
+    if system_file.is_dir() {
+        for subfile in system_file
+            .read_dir()
+            .expect("Failed to list the directory contents")
+        {
+            add(
+                ctx,
+                &subfile
+                    .expect("Failed to list the directory contents")
+                    .path(),
+            )?;
+        }
     } else {
-        println!("{}", "Nothing to update!".green());
+        let repo_file = ctx.absolute_to_configurator_path(&system_file);
+        if ctx.are_files_different(&system_file, &repo_file) {
+            ctx.copy(&system_file, &repo_file)?;
+            println!("Added {}", repo_file.display().to_string().bold());
+        } else {
+            println!("{}", "Nothing to update!".green());
+        }
     }
     Ok(())
 }
